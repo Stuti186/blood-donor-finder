@@ -12,7 +12,12 @@ import adminRoutes from "./routes/admin.js";
 
 const app = express();
 app.set("trust proxy", 1);
-app.use(cors({ origin: process.env.CLIENT_URL }));
+const origins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((s) => s.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+app.use(cors({ origin: origins }));
+
 app.use(express.json());
 app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 app.use("/api/auth", rateLimit({ windowMs: 15 * 60 * 1000, max: 30 }));
